@@ -20,6 +20,8 @@ namespace B.MovableStorage.Patch
         internal static void OnPlayerAttackInvoker(UseableMelee __instance)
         {
             var nativePlayer = __instance.player;
+            var uPlayer = UnturnedPlayer.FromPlayer(nativePlayer);
+
             if (Main.Instance.Configuration.Instance.Tools.Contains(nativePlayer.equipment.asset.id))
             {
 
@@ -33,32 +35,12 @@ namespace B.MovableStorage.Patch
                         var BarricadeID = BarricadeIndex.barricade.asset.id;
                         var Storage = StorageHelper.GetInteractableStorage(nativePlayer);
 
-                        if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID) && Storage != null)
+                        if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID) && Storage != null && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID)
                         {
-                            Storage.isOpen = true;
-                            Storage.opener = nativePlayer;
-                            nativePlayer.inventory.isStoring = true;
-                            nativePlayer.inventory.isStorageTrunk = false;
-                            nativePlayer.inventory.storage = Storage;
-                            nativePlayer.inventory.updateItems(PlayerInventory.STORAGE, Storage.items);
-                            nativePlayer.inventory.sendStorage();
-
-                            List<Modals.Item> Items = null;
-
-                            for (byte b = 0; b < Storage.items.getItemCount(); b += 1)
-                            {
-                                ItemJar item = Storage.items.getItem(b);
-                                //Items.Add(new Modals.Item(item.item.id, item.x, item.y, item.rot, item.item.amount, item.item.quality, item.item.state));
-                            }
-
                             Storage.items.items.Clear();
                             BarricadeManager.destroyBarricade(BarricadeRegion, x, y, index, bindex);
 
-                            ItemManager.dropItem(new Item(BarricadeID, true), UnturnedPlayer.FromPlayer(nativePlayer).Position, false, false, false);
-
-                            Storage.isOpen = false;
-                            nativePlayer.inventory.isStorageTrunk = false;
-                            nativePlayer.inventory.isStoring = false;
+                            ItemManager.dropItem(new Item(BarricadeID, true), uPlayer.Position, false, false, false);
                         }
                         else
                         {
