@@ -43,10 +43,11 @@ namespace B.MovableStorage
                         BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion barricadeR);
                         var BarricadeIndex = barricadeR.barricades[bindex];
                         var BarricadeID = BarricadeIndex.barricade.id;
+                        var BarricadeOwner = BarricadeIndex.owner;
 
                         var Storage = StorageHelper.GetInteractableStorage(player.Player);
                         var MStorage = GetStorage(player.CSteamID.m_SteamID, BarricadeID);
-                        if (Storage != null && MStorage != null)
+                        if (Storage != null && MStorage != null && BarricadeOwner == player.CSteamID.m_SteamID)
                         {
                             foreach (var item in MStorage.Items)
                             {
