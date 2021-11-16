@@ -36,7 +36,8 @@ namespace B.MovableStorage.Patch
                         var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID);
                         if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID)
                                && Storage != null
-                               && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID)
+                               && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID
+                               && StoragesCount != Main.Instance.Configuration.Instance.AmountOfStorages)
                         {
                             // Gets all the items data from the storage.
                             List<Modals.Item> items = new List<Modals.Item>();
