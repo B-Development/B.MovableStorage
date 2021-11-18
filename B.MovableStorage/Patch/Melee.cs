@@ -18,7 +18,7 @@ namespace B.MovableStorage.Patch
             var nativePlayer = __instance.player;
             var uPlayer = UnturnedPlayer.FromPlayer(nativePlayer);
 
-            if (Main.Instance.Configuration.Instance.Tools.Contains(nativePlayer.equipment.asset.id))
+            if (Main.Instance.Configuration.Instance.Tool == nativePlayer.equipment.asset.id && Main.Instance.Configuration.Instance.HitStorageToPickup == true)
             {
 
                 if (PhysicsUtility.raycast(new Ray(nativePlayer.look.aim.position, nativePlayer.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))

@@ -6,17 +6,15 @@ namespace B.MovableStorage
     public class Config : IRocketPluginConfiguration
     {
         public int AmountOfStorages;
-        public List<ushort> Tools;
+        public bool HitStorageToPickup;
+        public ushort Tool;
         public List<ushort> Storages;
 
         public void LoadDefaults()
         {
             AmountOfStorages = 3;
-
-            Tools = new List<ushort>()
-            {
-                138
-            };
+            HitStorageToPickup = false;
+            Tool = 138;
 
             Storages = new List<ushort>()
             {
