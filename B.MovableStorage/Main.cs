@@ -2,7 +2,6 @@
 using B.MovableStorage.Storage;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
-using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Framework.Utilities;
 using SDG.Unturned;
@@ -10,7 +9,6 @@ using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = Rocket.Core.Logging.Logger;
 
 namespace B.MovableStorage
 {
@@ -31,40 +29,10 @@ namespace B.MovableStorage
             
             Instance = this;
 
-            //UnturnedPlayerEvents.OnPlayerUpdateGesture += OnGesture;
             BarricadeManager.onBarricadeSpawned += OnBarricadeSpawned;
             BarricadeManager.onSalvageBarricadeRequested += OnBarricadeSalvage;
-        }/*
+        }
 
-        private void OnGesture(UnturnedPlayer player, UnturnedPlayerEvents.PlayerGesture gesture)
-        {
-            if(gesture == UnturnedPlayerEvents.PlayerGesture.PunchLeft || gesture == UnturnedPlayerEvents.PlayerGesture.PunchRight)
-            {
-                if (PhysicsUtility.raycast(new Ray(player.Player.look.aim.position, player.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
-                {
-                    Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
-                    if (barri != null)
-                    {
-                        BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion barricadeR);
-                        var BarricadeIndex = barricadeR.barricades[bindex];
-                        var BarricadeID = BarricadeIndex.barricade.id;
-                        var BarricadeOwner = BarricadeIndex.owner;
-
-                        var Storage = StorageHelper.GetInteractableStorage(player.Player);
-                        var MStorage = GetStorage(player.CSteamID.m_SteamID, BarricadeID);
-                        if (Storage != null && MStorage != null && BarricadeOwner == player.CSteamID.m_SteamID)
-                        {
-                            foreach (var item in MStorage.Items)
-                            {
-                                Storage.items.items.Add(new ItemJar(item.location_x, item.location_y, item.rot, new Item(item.item, item.amount, item.quality, item.state)));
-                            }
-
-                            RemoveStorage(player.CSteamID.m_SteamID, BarricadeID);
-                        }
-                    }
-                }
-            }
-        }*/
         private void OnBarricadeSalvage(CSteamID steamID, byte _x, byte _y, ushort _plant, ushort _index, ref bool shouldAllow)
         {
 
@@ -74,20 +42,17 @@ namespace B.MovableStorage
                 Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
                 if (barri != null)
                 {
-                    // Getting the barricade data.
                     BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion BarricadeRegion);
                     var BarricadeIndex = BarricadeRegion.barricades[bindex];
                     var BarricadeID = BarricadeIndex.barricade.asset.id;
                     var Storage = StorageHelper.GetInteractableStorage(uPlayer.Player);
 
-                    // Gets their current amount of storages.
                     var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID);
                     if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID)
                            && Storage != null
                            && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID
                            && StoragesCount != Main.Instance.Configuration.Instance.AmountOfStorages)
                     {
-                        // Gets all the items data from the storage.
                         List<Modals.Item> items = new List<Modals.Item>();
                         while (Storage.items.items.Count() > 0)
                         {
@@ -95,19 +60,14 @@ namespace B.MovableStorage
                             items.Add(new Modals.Item(firstItem.item.id, firstItem.x, firstItem.y, firstItem.rot, firstItem.item.amount, firstItem.item.quality, firstItem.item.metadata));
                             Storage.items.items.RemoveAt(Storage.items.getIndex(Storage.items.items.First().x, Storage.items.items.First().y));
                         }
-                        // Making it so we can store the data in a json format.
                         var storeData = new Modals.Storage()
                         {
                             StorageID = BarricadeID,
                             Owner = uPlayer.CSteamID.m_SteamID,
                             Items = items
                         };
-                        // Stores the data in json.
                         Main.Instance.AddStorage(storeData);
-                        // Removes the barricade and drops it on the floor.
                         BarricadeManager.destroyBarricade(BarricadeRegion, x, y, index, bindex);
-
-                        //ItemManager.dropItem(new Item(BarricadeID, true), uPlayer.Position, false, false, false);
                     }
                     else
                     {
@@ -131,7 +91,6 @@ namespace B.MovableStorage
                 {
                     foreach (var item in MStorage.Items)
                     {
-                        //storage.items.items.Add(new ItemJar(item.location_x, item.location_y, item.rot, new Item(item.item, item.amount, item.quality, item.state)));
                         storage.items.addItem(item.location_x, item.location_y, item.rot, new Item(item.item, item.amount, item.quality, item.state));
                     }
 
@@ -171,7 +130,6 @@ namespace B.MovableStorage
         #endregion Tests
         protected override void Unload()
         {
-            //UnturnedPlayerEvents.OnPlayerUpdateGesture -= OnGesture;
             BarricadeManager.onBarricadeSpawned -= OnBarricadeSpawned;
         }
     }
