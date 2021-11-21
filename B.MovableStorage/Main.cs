@@ -50,7 +50,8 @@ namespace B.MovableStorage
                     if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID)
                            && Storage != null
                            && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID
-                           && StoragesCount != Main.Instance.Configuration.Instance.AmountOfStorages)
+                           && StoragesCount != Main.Instance.Configuration.Instance.AmountOfStorages
+                           && Storage.items.items.Count != 0)
                     {
                         List<Modals.Item> items = new List<Modals.Item>();
                         while (Storage.items.items.Count() > 0)
