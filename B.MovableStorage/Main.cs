@@ -35,9 +35,8 @@ namespace B.MovableStorage
 
         private void OnBarricadeSalvage(CSteamID steamID, byte _x, byte _y, ushort _plant, ushort _index, ref bool shouldAllow)
         {
-
             var uPlayer = UnturnedPlayer.FromCSteamID(steamID);
-            if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT) && Main.Instance.Configuration.Instance.HitStorageToPickup == false)
+            if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
             {
                 Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
                 if (barri != null)
@@ -60,8 +59,12 @@ namespace B.MovableStorage
                             items.Add(new Modals.Item(firstItem.item.id, firstItem.x, firstItem.y, firstItem.rot, firstItem.item.amount, firstItem.item.quality, firstItem.item.metadata));
                             Storage.items.items.RemoveAt(Storage.items.getIndex(Storage.items.items.First().x, Storage.items.items.First().y));
                         }
+
+                        var ID = StoragesCount + 1;
                         var storeData = new Modals.Storage()
                         {
+                            Id = ID,
+                            OwnerName = uPlayer.DisplayName,
                             StorageID = BarricadeID,
                             Owner = uPlayer.CSteamID.m_SteamID,
                             Items = items
@@ -116,6 +119,10 @@ namespace B.MovableStorage
         {
             return storageData.FirstOrDefault(x => x.StorageID == barricade && x.Owner == owner);
         }
+        public Modals.Storage GetStorage(ulong owner, int? id)
+        {
+            return storageData.FirstOrDefault(x => x.Owner == owner && x.Id == id);
+        }
         public int StorageCount(ulong owner)
         {
             var amount = storageData.Where(x => x.Owner == owner).Count();
@@ -126,6 +133,10 @@ namespace B.MovableStorage
         {
             storageData.Remove(storageData.FirstOrDefault(x => x.Owner == owner && x.StorageID == barricade));
             StorageDataStorage.Save(storageData);
+        }
+        public List<Modals.Storage> GetStorages(ulong owner)
+        {
+            return storageData.Where(x => x.Owner == owner).ToList();
         }
         #endregion Tests
         protected override void Unload()

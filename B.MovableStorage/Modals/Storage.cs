@@ -4,9 +4,11 @@ namespace B.MovableStorage.Modals
 {
     public class Storage
     {
-        public ushort StorageID;
-        public List<Item> Items;
-        public ulong Owner;
+        public int Id { get; set; }
+        public ushort StorageID { get; set; }
+        public List<Item> Items { get; set; }
+        public ulong Owner { get; set; }
+        public string OwnerName { get; set; }
 
         public Storage()
         {
