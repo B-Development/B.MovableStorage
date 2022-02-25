@@ -36,7 +36,7 @@ namespace B.MovableStorage
         private void OnBarricadeSalvage(CSteamID steamID, byte _x, byte _y, ushort _plant, ushort _index, ref bool shouldAllow)
         {
             var uPlayer = UnturnedPlayer.FromCSteamID(steamID);
-            if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
+            /*if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
             {
                 Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
                 if (barri != null)
@@ -46,7 +46,7 @@ namespace B.MovableStorage
                     var BarricadeID = BarricadeIndex.barricade.asset.id;
                     var Storage = StorageHelper.GetInteractableStorage(uPlayer.Player);
 
-                    var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID);
+                    var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID, BarricadeID);
                     if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID)
                            && Storage != null
                            && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID
@@ -76,6 +76,44 @@ namespace B.MovableStorage
                     else
                     {
                         UnturnedChat.Say(uPlayer, "Storage Cannot be found", Color.red);
+                    }
+                }
+            }*/
+            if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
+            {
+                Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
+                if (barri != null)
+                {
+                    BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion BarricadeRegion);
+                    var BarricadeIndex = BarricadeRegion.barricades[bindex];
+                    var BarricadeID = BarricadeIndex.barricade.asset.id;
+                    var Storage = StorageHelper.GetInteractableStorage(uPlayer.Player);
+                    var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID, BarricadeID);
+
+                    if (Main.Instance.Configuration.Instance.Storages.Any(storage => storage.StorageID == BarricadeID) && Storage != null)
+                    {
+                        var ConfigStorage = Main.Instance.Configuration.Instance.Storages.FirstOrDefault(storage => storage.StorageID == BarricadeID);
+                        if (!ConfigStorage.Tool.Enabled && Storage.items.items.Count != 0 && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID && StoragesCount != ConfigStorage.AmountAllowed)
+                        {
+                            List<Modals.Item> items = new List<Modals.Item>();
+                            while (Storage.items.items.Count() > 0)
+                            {
+                                var firstItem = Storage.items.items.First();
+                                items.Add(new Modals.Item(firstItem.item.id, firstItem.x, firstItem.y, firstItem.rot, firstItem.item.amount, firstItem.item.quality, firstItem.item.metadata));
+                                Storage.items.items.RemoveAt(Storage.items.getIndex(Storage.items.items.First().x, Storage.items.items.First().y));
+                            }
+
+                            var ID = StoragesCount + 1;
+                            var storeData = new Modals.Storage()
+                            {
+                                Id = ID,
+                                OwnerName = uPlayer.DisplayName,
+                                StorageID = BarricadeID,
+                                Owner = uPlayer.CSteamID.m_SteamID,
+                                Items = items
+                            };
+                            Main.Instance.AddStorage(storeData);
+                        }
                     }
                 }
             }
@@ -124,9 +162,9 @@ namespace B.MovableStorage
         {
             return storageData.FirstOrDefault(x => x.Owner == owner && x.Id == id);
         }
-        public int StorageCount(ulong owner)
+        public int StorageCount(ulong owner, ushort barricade)
         {
-            var amount = storageData.Where(x => x.Owner == owner).Count();
+            var amount = storageData.Where(x => x.Owner == owner && x.StorageID == barricade).Count();
 
             return amount;
         }

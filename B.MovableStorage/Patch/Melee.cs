@@ -18,24 +18,21 @@ namespace B.MovableStorage.Patch
             var nativePlayer = __instance.player;
             var uPlayer = UnturnedPlayer.FromPlayer(nativePlayer);
 
-            if (Main.Instance.Configuration.Instance.Tool == nativePlayer.equipment.asset.id && Main.Instance.Configuration.Instance.HitStorageToPickup == true)
+            if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
             {
-                if (PhysicsUtility.raycast(new Ray(uPlayer.Player.look.aim.position, uPlayer.Player.look.aim.forward), out RaycastHit ahit, Mathf.Infinity, RayMasks.BARRICADE_INTERACT))
+                Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
+                if (barri != null)
                 {
-                    Interactable2SalvageBarricade barri = ahit.transform.GetComponent<Interactable2SalvageBarricade>();
-                    if (barri != null)
-                    {
-                        BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion BarricadeRegion);
-                        var BarricadeIndex = BarricadeRegion.barricades[bindex];
-                        var BarricadeID = BarricadeIndex.barricade.asset.id;
-                        var Storage = StorageHelper.GetInteractableStorage(uPlayer.Player);
+                    BarricadeManager.tryGetInfo(ahit.transform, out byte x, out byte y, out ushort index, out ushort bindex, out BarricadeRegion BarricadeRegion);
+                    var BarricadeIndex = BarricadeRegion.barricades[bindex];
+                    var BarricadeID = BarricadeIndex.barricade.asset.id;
+                    var Storage = StorageHelper.GetInteractableStorage(uPlayer.Player);
+                    var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID, BarricadeID);
 
-                        var StoragesCount = Main.Instance.StorageCount(uPlayer.CSteamID.m_SteamID);
-                        if (Main.Instance.Configuration.Instance.Storages.Contains(BarricadeID)
-                               && Storage != null
-                               && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID
-                               && StoragesCount != Main.Instance.Configuration.Instance.AmountOfStorages
-                               && Storage.items.items.Count != 0)
+                    if (Main.Instance.Configuration.Instance.Storages.Any(storage => storage.StorageID == BarricadeID) && Storage != null)
+                    {
+                        var ConfigStorage = Main.Instance.Configuration.Instance.Storages.FirstOrDefault(storage => storage.StorageID == BarricadeID);
+                        if (ConfigStorage.Tool.Enabled && Storage.items.items.Count != 0 && BarricadeIndex.owner == uPlayer.CSteamID.m_SteamID && StoragesCount != ConfigStorage.AmountAllowed && ConfigStorage.Tool.ToolID == nativePlayer.equipment.asset.id)
                         {
                             List<Modals.Item> items = new List<Modals.Item>();
                             while (Storage.items.items.Count() > 0)
@@ -58,10 +55,6 @@ namespace B.MovableStorage.Patch
                             BarricadeManager.destroyBarricade(BarricadeRegion, x, y, index, bindex);
 
                             ItemManager.dropItem(new Item(BarricadeID, true), uPlayer.Position, false, false, false);
-                        }
-                        else
-                        {
-                            UnturnedChat.Say(uPlayer, "Storage Cannot be found", Color.red);
                         }
                     }
                 }
