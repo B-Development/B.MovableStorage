@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B.MovableStorage", "B.MovableStorage.csproj", "{18770184-4847-4E17-A1E5-DD998F94BBC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B.MovableStorageV2", "..\B.MovableStorageV2\B.MovableStorageV2.csproj", "{F0937711-9AAF-4417-9516-A34F171CB784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{18770184-4847-4E17-A1E5-DD998F94BBC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18770184-4847-4E17-A1E5-DD998F94BBC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18770184-4847-4E17-A1E5-DD998F94BBC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0937711-9AAF-4417-9516-A34F171CB784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0937711-9AAF-4417-9516-A34F171CB784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0937711-9AAF-4417-9516-A34F171CB784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0937711-9AAF-4417-9516-A34F171CB784}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
