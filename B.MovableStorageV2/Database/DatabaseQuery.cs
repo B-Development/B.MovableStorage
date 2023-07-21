@@ -1,0 +1,34 @@
+﻿namespace B.MovableStorageV2.Database
+{
+    internal class DatabaseQuery
+    {
+        public const string StorageTable = @"
+CREATE TABLE IF NOT EXISTS Storages (
+    ID VARCHAR(255) NOT NULL,
+    StorageID SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    CurrentHolder BIGINT NOT NULL DEFAULT 0,
+    PosXInv TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    PosYInv TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    PageInv TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    Rotation FLOAT NOT NULL DEFAULT 0,
+    CONSTRAINT PK_Storages PRIMARY KEY (ID)
+);
+        ";
+
+        public const string ItemTable = @"
+CREATE TABLE IF NOT EXISTS Items (
+    ID VARCHAR(255) NOT NULL,
+    ItemID SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    LocationX TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    LocationY TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    Rot FLOAT NOT NULL DEFAULT 0,
+    Amount TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    Quality TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    State BLOB NOT NULL,
+    StorageLink VARCHAR(255) NOT NULL,
+    CONSTRAINT PK_Items PRIMARY KEY (ID),
+    CONSTRAINT FK_Items_StorageLink FOREIGN KEY (StorageLink) REFERENCES ActiveStorages (ID)
+);
+        ";
+    }
+}
